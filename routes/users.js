@@ -1,6 +1,7 @@
 const express = require("express");
 
 const userRouter = express.Router();
+const authentication = require("../middleware/authentication")
 // Import users controllers
 const {register, login} =require("../controllers/users")
 userRouter.post("/register",register)

@@ -1,8 +1,10 @@
 const express = require("express");
 const articleRouter = express.Router();
+const authentication = require("../middleware/authentication")
+
 // Import articles controllers
-// const {getAll,addBook,deletebook,ubdatebook,Null,notNull,orderdbooks} = require("../controller/book");
-// bookRouter.get("/", getAll);
+const {createNewArticle} = require("../controllers/articles");
+articleRouter.get("/",authentication, createNewArticle);
 
 
 module.exports = articleRouter;

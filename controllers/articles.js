@@ -1,8 +1,15 @@
 
 // This function creates new article
 const createNewArticle = (req, res) => {
- 
+  const author_id = req.token.userId;
 };
+
+
+
+
+
+
+
 
 // This function returns the articles
 const getAllArticles = (req, res) => {
