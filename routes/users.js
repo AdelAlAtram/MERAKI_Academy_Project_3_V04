@@ -1,7 +1,9 @@
 const express = require("express");
+
 const userRouter = express.Router();
 // Import users controllers
-
+const {register} =require("../controllers/users")
+userRouter.post("/register",register)
 
 
 module.exports = userRouter;
@@ -19,3 +21,5 @@ module.exports = userRouter;
   "role":"1"
 }
 */
+
+
