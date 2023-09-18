@@ -1,88 +1,95 @@
-const {pool} = require("../models/db")
+const { pool } = require("../models/db");
 
-
-const createNewArticle = async(req, res) => {
-  
+const createNewArticle = async (req, res) => {
   try {
-    const author_id = req.token.userId
+    const author_id = req.token.userId;
     console.log(author_id);
-  const { title, description} = req.body;
-  
-  const query = `INSERT INTO articles (title, description,author_id) VALUES ($1, $2,$3) RETURNING *`;
-  const values = [title, description,author_id];
-  const response = await pool.query(query, values);
+    const { title, description } = req.body;
 
-  if (response.rowCount) {
-    res.status(201).json({
-      success: true,
-      message: "user created successfully",
-      response: response.rows,
+    const query = `INSERT INTO articles (title, description,author_id) VALUES ($1, $2,$3) RETURNING *`;
+    const values = [title, description, author_id];
+    const response = await pool.query(query, values);
+
+    if (response.rowCount) {
+      res.status(201).json({
+        success: true,
+        message: "user created successfully",
+        response: response.rows,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
     });
   }
-} catch (error) {
-  console.log(error);
-  res.status(500).json({
-    success: false,
-    message: "Server Error",
-    error: error.message,
-  });
-}
 };
-
- 
 
 // headers: {
 //   authorization: `Bearer ${token}`,
 // }
 
-
-
-
-
-
 // This function returns the articles
 const getAllArticles = (req, res) => {
-  pool.query("SELECT * FROM articles;")
-  .then((result)=>{
-    res.json({
-      success: true,
-      message: "All the articles",
-      articles: result
+  pool
+    .query("SELECT * FROM articles;")
+    .then((result) => {
+      res.json({
+        success: true,
+        message: "All the articles",
+        articles: result,
+      });
     })
-})
-.catch((err)=>{
-  res.status(500).json({
-    success: false,
-    message: "Server error",
-    err: err
-  });
-})
+    .catch((err) => {
+      res.status(500).json({
+        success: false,
+        message: "Server error",
+        err: err,
+      });
+    });
 };
 
 //This function returns articles by author
 const getArticlesByAuthor = (req, res) => {
- 
+  const { search_1 } = req.params;
+  pool
+    .query(`SELECT * FROM articles WHERE author_id=${search_1}`)
+    .then((result) => {
+      if (!result) {
+        res.json({
+          success: false,
+          message: `The author: ${search_1} has no articles`,
+        });
+      }
+console.log(result.rows);
+      res.json({
+        success: true,
+        message: `All articles for the author: ${search_1}`,
+        articles: result.rows,
+      });
+    })
+    .catch((err) => {
+      console.log(err)
+      res.status(500).json({
+        success: false,
+        message: "Server error",
+      });
+    });
 };
 
 // This function returns article by its id
-const getArticleById = (req, res) => {
- 
-};
+const getArticleById = (req, res) => {};
 
 // This function updates article by its id
-const updateArticleById = (req, res) => {
- 
-};
+const updateArticleById = (req, res) => {};
 
 // This function deletes a specific article by its id
-const deleteArticleById = (req, res) => {
- 
-};
+const deleteArticleById = (req, res) => {};
 
 // This function deletes all the articles for a specific author
-const deleteArticlesByAuthor = (req, res) => {
- 
-};
+const deleteArticlesByAuthor = (req, res) => {};
 
 module.exports = {
   createNewArticle,
