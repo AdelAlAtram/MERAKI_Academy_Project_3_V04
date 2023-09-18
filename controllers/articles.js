@@ -54,7 +54,7 @@ const getAllArticles = (req, res) => {
 //This function returns articles by author
 const getArticlesByAuthor = (req, res) => {
   const { author } = req.query;
-
+  author_id
   pool
     .query(`SELECT * FROM articles WHERE author_id=${author}`)
     .then((result) => {
@@ -117,7 +117,7 @@ const updateArticleById = (req, res) => {
   const { title, description } = req.body;
   const { id } = req.params;
   pool
-    .query(`UPDATE articles SET title = ${title} WHERE ID = ${id}`)
+    .query(`UPDATE articles SET title = ${title} WHERE id = ${id}`)
     .then((result) => {
       if (!result) {
         res.json({
@@ -166,7 +166,36 @@ const deleteArticleById = (req, res) => {
 };
 
 // This function deletes all the articles for a specific author
-const deleteArticlesByAuthor = (req, res) => {};
+const deleteArticlesByAuthor = (req, res) => {
+  const { id } = req.params;
+
+  pool
+    .query(`DELETE FROM articles WHERE author_id= ${id};`)
+    .then((result) => {
+
+      if(!result){
+        res.json({
+          success: false,
+          message: `The author: ${id} has no articles`,
+        });
+      }
+      else{
+        res.json({
+          success: true,
+          message: `Articles with author : ${id} deleted successfully`,
+        });
+      }
+ 
+   
+    })
+    .catch((err) => {
+      console.log(err)
+      res.status(500).json({
+        success: false,
+        message: "Server error",
+      });
+    });
+};
 
 module.exports = {
   createNewArticle,
