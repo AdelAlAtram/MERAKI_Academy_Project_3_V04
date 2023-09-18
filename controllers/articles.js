@@ -5,7 +5,7 @@ const createNewArticle = async (req, res) => {
     const author_id = req.token.userId;
     console.log(req.token);
     const { title, description } = req.body;
-
+   
     const query = `INSERT INTO articles (title, description,author_id) VALUES ($1, $2,$3) RETURNING *`;
     const values = [title, description, author_id];
     const response = await pool.query(query, values);
@@ -111,11 +111,59 @@ const getArticleById = (req, res) => {
 
 };
 
+
 // This function updates article by its id
-const updateArticleById = (req, res) => {};
+const updateArticleById = (req, res) => {
+  const { title, description } = req.body;
+  const { id } = req.params;
+  pool
+    .query(`UPDATE articles SET title = ${title} WHERE ID = ${id}`)
+    .then((result) => {
+      if (!result) {
+        res.json({
+          success: false,
+          message: `The author: ${id} has no articles`,
+        });
+      }
+
+   else{
+    res.json({
+      success: true,
+      message: `All articles for the author: ${id}`,
+      articles: result.rows
+    });
+   }
+    })
+    .catch((err) => {
+      console.log(err)
+      res.status(500).json({
+        success: false,
+        message: "Server error",
+      });
+    });
+};
 
 // This function deletes a specific article by its id
-const deleteArticleById = (req, res) => {};
+const deleteArticleById = (req, res) => {
+  const { id } = req.params;
+  pool
+    .query(`DELETE FROM articles WHERE id= ${id};`)
+    .then((result) => {
+    res.json({
+      success: true,
+      message: `Article with id: ${id} deleted successfully`,
+    });
+   
+    })
+    .catch((err) => {
+      console.log(err)
+      res.status(500).json({
+        success: false,
+        message: "Server error",
+      });
+    });
+
+};
 
 // This function deletes all the articles for a specific author
 const deleteArticlesByAuthor = (req, res) => {};
