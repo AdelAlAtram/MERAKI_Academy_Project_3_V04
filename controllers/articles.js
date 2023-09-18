@@ -1,10 +1,39 @@
+const {pool} = require("../models/db")
 
-// This function creates new article
-const createNewArticle = (req, res) => {
-  const author_id = req.token.userId;
+
+const createNewArticle = async(req, res) => {
+  
+  try {
+    const author_id = req.token.userId
+    console.log(author_id);
+  const { title, description} = req.body;
+  
+  const query = `INSERT INTO articles (title, description,author_id) VALUES ($1, $2,$3) RETURNING *`;
+  const values = [title, description,author_id];
+  const response = await pool.query(query, values);
+
+  if (response.rowCount) {
+    res.status(201).json({
+      success: true,
+      message: "user created successfully",
+      response: response.rows,
+    });
+  }
+} catch (error) {
+  console.log(error);
+  res.status(500).json({
+    success: false,
+    message: "Server Error",
+    error: error.message,
+  });
+}
 };
 
+ 
 
+// headers: {
+//   authorization: `Bearer ${token}`,
+// }
 
 
 
@@ -13,7 +42,21 @@ const createNewArticle = (req, res) => {
 
 // This function returns the articles
 const getAllArticles = (req, res) => {
- 
+  pool.query("SELECT * FROM articles;")
+  .then((result)=>{
+    res.json({
+      success: true,
+      message: "All the articles",
+      articles: result
+    })
+})
+.catch((err)=>{
+  res.status(500).json({
+    success: false,
+    message: "Server error",
+    err: err
+  });
+})
 };
 
 //This function returns articles by author

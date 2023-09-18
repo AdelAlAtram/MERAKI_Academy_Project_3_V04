@@ -1,21 +1,13 @@
 const express = require("express");
 const articleRouter = express.Router();
-const authentication = require("../middleware/authentication")
+const authentication = require("../middleware/authentication");
 
 // Import articles controllers
-const {createNewArticle} = require("../controllers/articles");
-articleRouter.get("/",authentication, createNewArticle);
-
+const { createNewArticle,getAllArticles } = require("../controllers/articles");
+articleRouter.post("/", authentication, createNewArticle);
+articleRouter.get("/", authentication, getAllArticles);
 
 module.exports = articleRouter;
-
-
-
-
-
-
-
-
 
 /*
  * Testing Objects:
