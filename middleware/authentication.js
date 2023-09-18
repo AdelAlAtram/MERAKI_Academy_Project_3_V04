@@ -26,7 +26,7 @@ const authentication = (req, res, next) => {
     res.status(500).json({
       success: false,
       message: `Server Error`,
-      err: err.message,
+      err: err.message
     });
   }
 };

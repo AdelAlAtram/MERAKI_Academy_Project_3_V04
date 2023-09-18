@@ -3,7 +3,7 @@ const { pool } = require("../models/db");
 const createNewArticle = async (req, res) => {
   try {
     const author_id = req.token.userId;
-    console.log(author_id);
+    console.log(req.token);
     const { title, description } = req.body;
 
     const query = `INSERT INTO articles (title, description,author_id) VALUES ($1, $2,$3) RETURNING *`;
@@ -53,20 +53,21 @@ const getAllArticles = (req, res) => {
 
 //This function returns articles by author
 const getArticlesByAuthor = (req, res) => {
-  const { search_1 } = req.params;
+  const { author } = req.query;
+
   pool
-    .query(`SELECT * FROM articles WHERE author_id=${search_1}`)
+    .query(`SELECT * FROM articles WHERE author_id=${author}`)
     .then((result) => {
       if (!result) {
         res.json({
           success: false,
-          message: `The author: ${search_1} has no articles`,
+          message: `The author: ${author} has no articles`,
         });
       }
 console.log(result.rows);
       res.json({
         success: true,
-        message: `All articles for the author: ${search_1}`,
+        message: `All articles for the author: ${author}`,
         articles: result.rows,
       });
     })
@@ -80,7 +81,35 @@ console.log(result.rows);
 };
 
 // This function returns article by its id
-const getArticleById = (req, res) => {};
+const getArticleById = (req, res) => {
+  const { id } = req.params;
+  pool
+    .query(`SELECT * FROM articles WHERE id=${id}`)
+    .then((result) => {
+      if (!result) {
+        res.json({
+          success: false,
+          message: `The author: ${id} has no articles`,
+        });
+      }
+
+   else{
+    res.json({
+      success: true,
+      message: `All articles for the author: ${id}`,
+      articles: result.rows
+    });
+   }
+    })
+    .catch((err) => {
+      console.log(err)
+      res.status(500).json({
+        success: false,
+        message: "Server error",
+      });
+    });
+
+};
 
 // This function updates article by its id
 const updateArticleById = (req, res) => {};

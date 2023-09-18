@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 
 // getting environment variables
 const SECRET = process.env.SECRET;
+const TOKEN_EXP_Time = process.env.TOKEN_EXP_Time;
 
 const {pool} = require("../models/db")
 const bcrypt = require("bcrypt");
@@ -47,15 +48,16 @@ const login =async (req, res) => {
       const result = await bcrypt.compare(password, response.rows[0].password);
       if(result){
         const payload = {
-          userId:  response.rows[0]._id,
+          userId:  response.rows[0].id,
           country:  response.rows[0].country,
           role:  response.rows[0].role_id,
         };
+        console.log(payload);
 
         const options = {
           expiresIn: "60m",
         };
-        const token = jwt.sign(payload, SECRET, options);
+        const token = jwt.sign(payload, process.env.SECRET, options);
         res.status(200).json({
           success: true,
           message: `Valid login credentials`,
@@ -63,14 +65,15 @@ const login =async (req, res) => {
         });
       }
 
-
+else{
+  res.status(201).json({
+    success: false,
+    message: "The email doesn’t exist or the password you’ve entered is incorrect",
+  });
+}
 
      
-      res.status(201).json({
-        success: true,
-        message: "Valid login credentials",
-        response: response.rows[0],
-      });
+
     }
   
   } catch (error) {
